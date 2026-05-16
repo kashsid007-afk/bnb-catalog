@@ -70,7 +70,7 @@ export function BulkUpload({ onSuccess }: Props) {
 
   const removeModel = (brand: string, model: string) => {
     setParsedModels((prev: any) => {
-      const updated = { ...prev, [brand]: prev[brand].filter(m => m !== model) }
+      const updated = { ...prev, [brand]: prev[brand].filter((m: string) => m !== model) }
       if (updated[brand].length === 0) delete updated[brand]
       return { ...updated }
     })
