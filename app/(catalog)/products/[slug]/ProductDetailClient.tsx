@@ -5,7 +5,7 @@ import Link from 'next/link'
 import { ArrowLeft, Share2, MessageCircle, Bookmark, BookmarkCheck, ChevronDown, ChevronUp, Play } from 'lucide-react'
 import { buildSingleInquiry } from '@/lib/whatsapp'
 import { useTray } from '@/hooks/useTray'
-import { totalModels, cn } from '@/lib/utils'
+import { getTotalModels, cn } from '@/lib/utils'
 import type { Product } from '@/types'
 
 export function ProductDetailClient({ product, waNumber }: { product: Product; waNumber: string }) {
@@ -17,7 +17,7 @@ export function ProductDetailClient({ product, waNumber }: { product: Product; w
   const allMedia = [...product.image_urls.map(url => ({ type: 'image', url })),
     ...(product.video_url ? [{ type: 'video', url: product.video_url }] : [])]
   const current = allMedia[mediaIdx]
-  const modelCount = totalModels(product.models)
+  const modelCount = getTotalModels(product.models)
 
   const share = async () => {
     if (navigator.share) {
