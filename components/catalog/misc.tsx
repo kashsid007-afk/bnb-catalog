@@ -1,6 +1,6 @@
 'use client'
 import { MessageCircle, Bookmark, Check } from 'lucide-react'
-import { buildSingleInquiryURL } from '@/lib/whatsapp'
+import { buildInquiryURL } from '@/lib/whatsapp'
 import { useTray } from '@/hooks/useTray'
 import { cn } from '@/lib/utils'
 import type { Product, ModelMap } from '@/types'
@@ -56,7 +56,7 @@ export function ModelsList({ models }: { models: ModelMap }) {
 export function WhatsAppButtons({ product, waNumber }: { product: Product; waNumber: string }) {
   const { addItem, isInTray } = useTray()
   const inTray = isInTray(product.id)
-  const waUrl = buildSingleInquiryURL(product.lot_code, product.name, waNumber)
+  const waUrl = buildInquiryURL(product.lot_code, product.name, waNumber)
 
   return (
     <div className="space-y-2.5 mb-4 animate-fade-up" style={{ animationDelay: '0.2s' }}>
