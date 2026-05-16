@@ -4,7 +4,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { ArrowLeft, Share2, MessageCircle, Bookmark, BookmarkCheck, ChevronDown, ChevronUp, Play } from 'lucide-react'
 import { buildSingleInquiry } from '@/lib/whatsapp'
-import { useTray } from '@/lib/hooks/useTray'
+import { useTray } from '@/hooks/useTray'
 import { totalModels, cn } from '@/lib/utils'
 import type { Product } from '@/types'
 
