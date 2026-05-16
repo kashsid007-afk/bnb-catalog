@@ -60,7 +60,7 @@ export function BulkUpload({ onSuccess }: Props) {
 
   const addCustomModel = () => {
     if (!customModel.trim() || !customBrand.trim()) return
-    setParsedModels(prev => ({
+    setParsedModels((prev: any) => ({
       ...prev,
       [customBrand.trim()]: [...(prev[customBrand.trim()] ?? []), customModel.trim()],
     }))
