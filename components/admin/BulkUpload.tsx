@@ -7,7 +7,6 @@ import { uploadToCloudinary } from '@/lib/cloudinary'
 import { createClient } from '@/lib/supabase/client'
 import { slugify } from '@/lib/utils'
 import toast from 'react-hot-toast'
-import type { any } from '@/types'
 
 interface MediaFile { file: File; preview: string; type: 'image' | 'video' }
 interface Props { onSuccess?: () => void }
