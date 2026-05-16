@@ -84,9 +84,7 @@ export function ProductDetailClient({ product, waNumber }: { product: Product; w
         <div>
           <div className="text-[10px] font-bold tracking-widest text-bnb-gold mb-1">LOT · {product.lot_code}</div>
           <h1 className="font-display text-2xl font-light text-bnb-dark leading-tight">{product.name}</h1>
-          {product.category && (
-            <div className="text-xs text-bnb-muted mt-1">{product.category.name}</div>
-          )}
+          
         </div>
 
         {/* Features */}
