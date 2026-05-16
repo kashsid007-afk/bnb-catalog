@@ -1,9 +1,8 @@
 import { createClient } from '@/lib/supabase/server'
 import { notFound } from 'next/navigation'
-import type { Metadata } from 'next'
 import { ProductGallery } from '@/components/catalog/ProductGallery'
 import { FeaturePills, ModelsList, WhatsAppButtons, BackButton, ShareButton } from '@/components/catalog/misc'
-import type { Product, Settings } from '@/types'
+import type { Product } from '@/types'
 
 export const revalidate = 60
 
@@ -13,7 +12,7 @@ export default async function ProductPage({
   params: Promise<{ slug: string }>
 }) {
   const { slug } = await params
-  const supabase = createClient()
+  const supabase = await createClient()
 
   const [{ data: product }, { data: settingsRows }] = await Promise.all([
     supabase.from('products').select('*, category:categories(*)').eq('slug', slug).single(),

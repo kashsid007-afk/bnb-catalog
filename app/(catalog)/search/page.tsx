@@ -1,7 +1,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { SearchBar } from '@/components/catalog/SearchBar'
 import { ProductCard } from '@/components/catalog/ProductCard'
-import type { Product } from '@/types'
+import type { Product, Settings } from '@/types'
 
 export default async function SearchPage({
   searchParams,
@@ -10,10 +10,11 @@ export default async function SearchPage({
 }) {
   const { q } = await searchParams
   const query = q?.trim() || ''
-  const supabase = createClient()
+  const supabase = await createClient()
 
   const { data: settings } = await supabase.from('settings').select('*')
-  const waNumber = settings?.find((s: any) => s.key === 'whatsapp_number')?.value || '919999999999'
+  const settingsRows = (settings || []) as Settings[]
+  const waNumber = settingsRows.find((s: Settings) => s.key === 'whatsapp_number')?.value || '919999999999'
 
   let products: Product[] = []
   if (query) {

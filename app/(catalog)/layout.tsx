@@ -3,7 +3,7 @@ import { createClient } from '@/lib/supabase/server'
 import { AnnouncementBanner } from '@/components/catalog/AnnouncementBanner'
 
 export default async function CatalogLayout({ children }: { children: React.ReactNode }) {
-  const supabase = createClient()
+  const supabase = await createClient()
   const { data } = await supabase.from('settings').select('*')
   const banner = data?.find(s => s.key === 'announcement_banner')?.value || ''
 

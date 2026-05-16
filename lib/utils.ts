@@ -1,3 +1,4 @@
+import type { ModelMap } from '@/types'
 import { clsx, type ClassValue } from 'clsx'
 import { twMerge } from 'tailwind-merge'
 
@@ -26,14 +27,16 @@ export function buildSingleWhatsAppURL(
   return `https://wa.me/${phone}?text=${encodeURIComponent(message)}`
 }
 
+export const buildInquiryURL = buildSingleWhatsAppURL
+
 export function slugify(text: string): string {
   return text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')
 }
 
 // Parse WhatsApp broadcast format into models object
 // Input: "👉🏻Samsung :\nA06. 10\nA07. 10\n👉🏻iPhone :\n11-10\n12-10"
-export function parseBroadcastModels(text: string): Record<string, string[]> {
-  const result: Record<string, string[]> = {}
+export function parseBroadcastModels(text: string): ModelMap {
+  const result: ModelMap = {}
   const brandMap: Record<string, string> = {
     samsung: 'Samsung', iphone: 'iPhone', vivo: 'Vivo',
     oppo: 'Oppo', oneplus: 'OnePlus', 'one+': 'OnePlus',
@@ -73,11 +76,13 @@ export function parseBroadcastModels(text: string): Record<string, string[]> {
   return result
 }
 
-export function getTotalModels(models: Record<string, string[]>): number {
+export const parseBroadcastText = parseBroadcastModels
+
+export function getTotalModels(models: ModelMap = {}): number {
   return Object.values(models).reduce((sum, arr) => sum + arr.length, 0)
 }
 
-export function formatModelsPreview(models: Record<string, string[]>): string {
+export function formatModelsPreview(models: ModelMap): string {
   const brands = Object.keys(models)
   if (brands.length === 0) return 'No models'
   if (brands.length <= 2) return brands.join(', ')

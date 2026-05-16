@@ -11,7 +11,7 @@ export default async function HomePage({
   searchParams: Promise<{ cat?: string }>
 }) {
   const { cat: selectedCat = 'all' } = await searchParams
-  const supabase = createClient()
+  const supabase = await createClient()
 
   const [{ data: categories }, { data: settings }, { data: featured }, { data: newArrivals }] =
     await Promise.all([
@@ -22,8 +22,13 @@ export default async function HomePage({
     ])
 
   let filteredProducts: Product[] = []
-  if (selectedCat !== 'all' && categories) {
-    const catId = (categories as Category[]).find(c => c.slug === selectedCat)?.id
+  const cats = (categories || []) as Category[]
+  const settingsRows = (settings || []) as { key: string; value: string }[]
+  const featuredProducts = (featured || []) as Product[]
+  const newArrivalProducts = (newArrivals || []) as Product[]
+
+  if (selectedCat !== 'all') {
+    const catId = cats.find((c: Category) => c.slug === selectedCat)?.id
     if (catId) {
       const { data } = await supabase
         .from('products')
@@ -31,12 +36,11 @@ export default async function HomePage({
         .eq('sold_out', false)
         .eq('category_id', catId)
         .order('created_at', { ascending: false })
-      filteredProducts = (data as Product[]) || []
+      filteredProducts = (data || []) as Product[]
     }
   }
 
-  const waNumber = settings?.find(s => s.key === 'whatsapp_number')?.value || '919999999999'
-  const cats = (categories as Category[]) || []
+  const waNumber = settingsRows.find(s => s.key === 'whatsapp_number')?.value || '919999999999'
 
   return (
     <div className="page-enter">
@@ -59,14 +63,14 @@ export default async function HomePage({
       <CategoryChips categories={cats} selected={selectedCat} />
 
       {/* Featured */}
-      {featured && featured.length > 0 && selectedCat === 'all' && (
+      {featuredProducts.length > 0 && selectedCat === 'all' && (
         <section className="px-4 mt-2">
           <div className="flex items-center justify-between mb-3">
             <h2 className="text-[13px] font-bold text-bnb-dark">Featured Lots</h2>
             <Link href="/products" className="text-[11px] text-bnb-gold">See all →</Link>
           </div>
           <div className="grid grid-cols-2 gap-3">
-            {(featured as Product[]).map((p, i) => (
+            {featuredProducts.map((p, i) => (
               <ProductCard key={p.id} product={p} waNumber={waNumber} animationDelay={i * 0.04} />
             ))}
           </div>
@@ -74,14 +78,14 @@ export default async function HomePage({
       )}
 
       {/* New Arrivals */}
-      {newArrivals && newArrivals.length > 0 && selectedCat === 'all' && (
+      {newArrivalProducts.length > 0 && selectedCat === 'all' && (
         <section className="px-4 mt-5">
           <div className="flex items-center justify-between mb-3">
             <h2 className="text-[13px] font-bold text-bnb-dark">New Arrivals</h2>
             <Link href="/products?filter=new" className="text-[11px] text-bnb-gold">See all →</Link>
           </div>
           <div className="grid grid-cols-2 gap-3">
-            {(newArrivals as Product[]).map((p, i) => (
+            {newArrivalProducts.map((p, i) => (
               <ProductCard key={p.id} product={p} waNumber={waNumber} animationDelay={i * 0.04} />
             ))}
           </div>

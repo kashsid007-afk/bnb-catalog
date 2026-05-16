@@ -1,3 +1,5 @@
+export type ModelMap = Record<string, string[]>
+
 export interface Product {
   id: string
   lot_code: string
@@ -9,7 +11,7 @@ export interface Product {
   pack_size: number | null
   colour_mix: string | null
   total_lot_size: number | null
-  models: Record<string, string[]>   // { "Samsung": ["A06","S24"], "iPhone": ["15","16"] }
+  models: ModelMap
   image_urls: string[]
   video_url: string | null
   featured: boolean
@@ -32,11 +34,17 @@ export interface Settings {
   value: string
 }
 
+export interface SettingsMap {
+  whatsapp_number: string
+  store_name: string
+  announcement: string | null
+}
+
 export interface TrayItem {
   id: string
   lot_code: string
   name: string
   emoji?: string
-  models: Record<string, string[]>
+  models: ModelMap
   qty: number
 }

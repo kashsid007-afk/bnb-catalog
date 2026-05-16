@@ -42,27 +42,27 @@ export function TrayDrawer({ items, waNumber, onUpdateQty, onRemove, onClear, on
             </div>
           ) : (
             items.map((item, i) => (
-              <div key={item.product.id}
+              <div key={item.id}
                 className="bg-white rounded-2xl border border-bnb-sand p-3 flex items-center gap-3 animate-fade-up"
                 style={{ animationDelay: `${i * 40}ms` }}>
                 <div className="w-12 h-12 rounded-xl bg-bnb-cream flex items-center justify-center flex-shrink-0 text-[10px] font-bold text-bnb-gold border border-bnb-sand">
-                  {item.product.lot_code}
+                  {item.lot_code}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <div className="text-[12px] font-semibold text-bnb-dark truncate">{item.product.name}</div>
-                  <div className="text-[10px] text-bnb-muted mt-0.5">LOT {item.product.lot_code}</div>
+                  <div className="text-[12px] font-semibold text-bnb-dark truncate">{item.name}</div>
+                  <div className="text-[10px] text-bnb-muted mt-0.5">LOT {item.lot_code}</div>
                   <div className="flex items-center gap-2 mt-1.5">
-                    <button onClick={() => onUpdateQty(item.product.id, item.qty - 1)} className="w-6 h-6 rounded-lg border border-bnb-sand bg-bnb-cream flex items-center justify-center active:scale-90 transition-all">
+                    <button onClick={() => onUpdateQty(item.id, item.qty - 1)} className="w-6 h-6 rounded-lg border border-bnb-sand bg-bnb-cream flex items-center justify-center active:scale-90 transition-all">
                       <Minus size={10} />
                     </button>
                     <span className="text-[13px] font-bold text-bnb-dark min-w-[20px] text-center">{item.qty}</span>
-                    <button onClick={() => onUpdateQty(item.product.id, item.qty + 1)} className="w-6 h-6 rounded-lg border border-bnb-sand bg-bnb-cream flex items-center justify-center active:scale-90 transition-all">
+                    <button onClick={() => onUpdateQty(item.id, item.qty + 1)} className="w-6 h-6 rounded-lg border border-bnb-sand bg-bnb-cream flex items-center justify-center active:scale-90 transition-all">
                       <Plus size={10} />
                     </button>
                     <span className="text-[10px] text-bnb-muted">lots</span>
                   </div>
                 </div>
-                <button onClick={() => onRemove(item.product.id)} className="w-8 h-8 rounded-xl bg-red-50 border border-red-100 flex items-center justify-center text-red-400 flex-shrink-0 active:scale-90 transition-all">
+                <button onClick={() => onRemove(item.id)} className="w-8 h-8 rounded-xl bg-red-50 border border-red-100 flex items-center justify-center text-red-400 flex-shrink-0 active:scale-90 transition-all">
                   <Trash2 size={13} />
                 </button>
               </div>
@@ -73,7 +73,7 @@ export function TrayDrawer({ items, waNumber, onUpdateQty, onRemove, onClear, on
           <div className="p-4 border-t border-bnb-sand flex-shrink-0 space-y-2">
             <div className="bg-[#E8F8EE] border border-[#b2e0c2] rounded-xl px-3 py-2.5 text-[10px] text-[#2d5a3d] font-mono leading-relaxed whitespace-pre-wrap">
               {'Hi BNB,\n\nWholesale inquiry:\n\n' + items.map((item, i) =>
-                `${i + 1}. LOT ${item.product.lot_code} - ${item.product.name}\n   Qty: ${item.qty} lot${item.qty > 1 ? 's' : ''}`
+                `${i + 1}. LOT ${item.lot_code} - ${item.name}\n   Qty: ${item.qty} lot${item.qty > 1 ? 's' : ''}`
               ).join('\n\n') + `\n\nTotal: ${totalQty} lots\nPlease confirm availability.`}
             </div>
             <a href={waUrl} target="_blank" rel="noopener noreferrer"

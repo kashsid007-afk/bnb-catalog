@@ -1,4 +1,4 @@
-import ProductCard from './ProductCard'
+import { ProductCard } from './ProductCard'
 import ProductCardSkeleton from './ProductCardSkeleton'
 import type { Product } from '@/types'
 
@@ -36,7 +36,7 @@ export default function ProductGrid({ products, waNumber, loading }: Props) {
           key={product.id}
           product={product}
           waNumber={waNumber}
-          style={{ animationDelay: `${i * 55}ms` }}
+          animationDelay={i * 0.055}
         />
       ))}
     </div>

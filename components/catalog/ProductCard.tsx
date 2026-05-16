@@ -102,3 +102,5 @@ export function ProductCard({ product, waNumber, onAddToTray, inTray, animationD
     </div>
   )
 }
+
+export default ProductCard

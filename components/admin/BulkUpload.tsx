@@ -6,6 +6,7 @@ import { parseBroadcastText, countModels } from '@/lib/parseModels'
 import { uploadToCloudinary } from '@/lib/cloudinary'
 import { createClient } from '@/lib/supabase/client'
 import { slugify } from '@/lib/utils'
+import type { ModelMap } from '@/types'
 import toast from 'react-hot-toast'
 
 interface MediaFile { file: File; preview: string; type: 'image' | 'video' }
@@ -23,7 +24,7 @@ export function BulkUpload({ onSuccess }: Props) {
   const [packSize, setPackSize] = useState('')
   const [mediaFiles, setMediaFiles] = useState<MediaFile[]>([])
   const [pasteText, setPasteText] = useState('')
-  const [parsedModels, setParsedModels] = useState<any>({})
+  const [parsedModels, setParsedModels] = useState<ModelMap>({})
   const [customModel, setCustomModel] = useState('')
   const [customBrand, setCustomBrand] = useState('')
   const [newArrival, setNewArrival] = useState(true)
@@ -60,7 +61,7 @@ export function BulkUpload({ onSuccess }: Props) {
 
   const addCustomModel = () => {
     if (!customModel.trim() || !customBrand.trim()) return
-    setParsedModels((prev: any) => ({
+    setParsedModels((prev: ModelMap) => ({
       ...prev,
       [customBrand.trim()]: [...(prev[customBrand.trim()] ?? []), customModel.trim()],
     }))
@@ -69,8 +70,8 @@ export function BulkUpload({ onSuccess }: Props) {
   }
 
   const removeModel = (brand: string, model: string) => {
-    setParsedModels((prev: any) => {
-      const updated = { ...prev, [brand]: prev[brand].filter((m: string) => m !== model) }
+    setParsedModels((prev: ModelMap) => {
+      const updated = { ...prev, [brand]: (prev[brand] ?? []).filter((m: string) => m !== model) }
       if (updated[brand].length === 0) delete updated[brand]
       return { ...updated }
     })
@@ -130,8 +131,8 @@ export function BulkUpload({ onSuccess }: Props) {
       setPackSize(''); setMediaFiles([]); setPasteText(''); setParsedModels({})
       setNewArrival(true); setFeatured(false)
       onSuccess?.()
-    } catch (err: any) {
-      toast.error(err.message ?? 'Upload failed — please try again')
+    } catch (err: unknown) {
+      toast.error(err instanceof Error ? err.message : 'Upload failed — please try again')
     } finally {
       setUploading(false)
       setUploadProgress('')
@@ -260,11 +261,11 @@ export function BulkUpload({ onSuccess }: Props) {
                 </span>
               </div>
               <div className="space-y-2 max-h-48 overflow-y-auto">
-                {Object.entries(parsedModels).map(([brand, models]) => (
+                {Object.entries(parsedModels).map(([brand, models]: [string, string[]]) => (
                   <div key={brand}>
                     <p className="text-[10px] font-bold text-bnb-gold uppercase mb-1">{brand}</p>
                     <div className="flex flex-wrap gap-1">
-                      {models.map(m => (
+                      {models.map((m: string) => (
                         <span key={m} className="px-2 py-0.5 bg-white border border-bnb-sand rounded-lg text-[10px] text-bnb-dark flex items-center gap-1">
                           {m}
                           <button onClick={() => removeModel(brand, m)} className="text-red-400 ml-0.5">×</button>

@@ -9,13 +9,15 @@ export function buildSingleInquiry(
   return `https://wa.me/${phone}?text=${encodeURIComponent(msg)}`
 }
 
+export const buildInquiryURL = buildSingleInquiry
+
 export function buildTrayInquiry(
   items: TrayItem[],
   phone: string
 ): string {
   let msg = `Hi BNB,\n\nWholesale inquiry:\n\n`
   items.forEach((item, i) => {
-    msg += `${i + 1}. LOT ${item.product.lot_code} – ${item.product.name}\n   Qty: ${item.qty} lot${item.qty > 1 ? 's' : ''}\n\n`
+    msg += `${i + 1}. LOT ${item.lot_code} – ${item.name}\n   Qty: ${item.qty} lot${item.qty > 1 ? 's' : ''}\n\n`
   })
   const totalLots = items.reduce((s, i) => s + i.qty, 0)
   msg += `Total: ${totalLots} lot${totalLots > 1 ? 's' : ''}\nPlease confirm availability and pricing. Thank you.`

@@ -1,23 +1,26 @@
 import Link from 'next/link'
-import Image from 'next/image'
 import { createClient } from '@/lib/supabase/server'
-import { Plus, Edit, Trash2, Star, Zap } from 'lucide-react'
+import { Plus, Edit, Trash2, Zap } from 'lucide-react'
 import type { Product } from '@/types'
 
+type ProductStatusRow = Pick<Product, 'id' | 'new_arrival' | 'featured' | 'sold_out'>
+
 export default async function DashboardPage() {
-  const supabase = createClient()
+  const supabase = await createClient()
   const [{ data: products }, { data: counts }] = await Promise.all([
     supabase.from('products').select('*').order('created_at', { ascending: false }).limit(20),
     supabase.from('products').select('id, new_arrival, featured, sold_out'),
   ])
 
-  const all = counts || []
+  const all = (counts || []) as ProductStatusRow[]
   const stats = {
     total: all.length,
-    newArrivals: all.filter((p: any) => p.new_arrival).length,
-    featured: all.filter((p: any) => p.featured).length,
-    soldOut: all.filter((p: any) => p.sold_out).length,
+    newArrivals: all.filter((p: ProductStatusRow) => p.new_arrival).length,
+    featured: all.filter((p: ProductStatusRow) => p.featured).length,
+    soldOut: all.filter((p: ProductStatusRow) => p.sold_out).length,
   }
+
+  const productRows = (products || []) as Product[]
 
   return (
     <div className="page-enter space-y-5">
@@ -69,7 +72,7 @@ export default async function DashboardPage() {
           <span className="text-[10px] text-bnb-muted">{stats.total} total</span>
         </div>
         <div className="space-y-2.5">
-          {(products as Product[] || []).map((p, i) => (
+          {productRows.map((p, i) => (
             <div
               key={p.id}
               className="bg-white border border-bnb-sand rounded-2xl p-3 flex items-center gap-3 animate-fade-up"
