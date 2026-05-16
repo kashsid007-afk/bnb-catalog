@@ -22,11 +22,11 @@ export default async function ProductPage({
 
   if (!product) notFound()
 
-  const settings: Settings = {
-    whatsapp_number: '919999999999',
-    store_name: 'BNB Wholesale',
-    announcement: null,
-  }
+  const settings = {
+  whatsapp_number: '919999999999',
+  store_name: 'BNB Wholesale',
+  announcement: null,
+}
   settingsRows?.forEach(row => {
     if (row.key === 'whatsapp_number') settings.whatsapp_number = row.value
     if (row.key === 'store_name') settings.store_name = row.value
