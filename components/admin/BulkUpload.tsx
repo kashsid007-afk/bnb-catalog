@@ -7,7 +7,7 @@ import { uploadToCloudinary } from '@/lib/cloudinary'
 import { createClient } from '@/lib/supabase/client'
 import { slugify } from '@/lib/utils'
 import toast from 'react-hot-toast'
-import type { ModelMap } from '@/types'
+import type { any } from '@/types'
 
 interface MediaFile { file: File; preview: string; type: 'image' | 'video' }
 interface Props { onSuccess?: () => void }
@@ -24,7 +24,7 @@ export function BulkUpload({ onSuccess }: Props) {
   const [packSize, setPackSize] = useState('')
   const [mediaFiles, setMediaFiles] = useState<MediaFile[]>([])
   const [pasteText, setPasteText] = useState('')
-  const [parsedModels, setParsedModels] = useState<ModelMap>({})
+  const [parsedModels, setParsedModels] = useState<any>({})
   const [customModel, setCustomModel] = useState('')
   const [customBrand, setCustomBrand] = useState('')
   const [newArrival, setNewArrival] = useState(true)
