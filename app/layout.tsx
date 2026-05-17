@@ -4,10 +4,10 @@ import '@/styles/globals.css'
 
 export const metadata: Metadata = {
   title: 'BNB Wholesale Collection',
-  description: 'Premium Mobile Accessories Wholesale Catalog',
+  description: 'Premium Mobile Cover Wholesale Catalog',
   openGraph: {
     title: 'BNB Wholesale Collection',
-    description: 'Premium Mobile Accessories — Browse & Order on WhatsApp',
+    description: 'Premium Mobile Covers — Browse & Inquire on WhatsApp',
     type: 'website',
   },
 }

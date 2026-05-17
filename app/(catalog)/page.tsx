@@ -3,6 +3,8 @@ import { createClient } from '@/lib/supabase/server'
 import { ProductCard } from '@/components/catalog/ProductCard'
 import { CategoryChips } from '@/components/catalog/CategoryChips'
 import { SearchBar } from '@/components/catalog/SearchBar'
+import { DEFAULT_WHATSAPP_NUMBER, demoCategories, demoProducts } from '@/lib/demo-data'
+import { hasSupabaseConfig } from '@/lib/supabase/config'
 import type { Product, Category } from '@/types'
 
 export default async function HomePage({
@@ -11,36 +13,48 @@ export default async function HomePage({
   searchParams: Promise<{ cat?: string }>
 }) {
   const { cat: selectedCat = 'all' } = await searchParams
-  const supabase = await createClient()
+  const supabase = hasSupabaseConfig() ? await createClient() : null
 
   const [{ data: categories }, { data: settings }, { data: featured }, { data: newArrivals }] =
-    await Promise.all([
-      supabase.from('categories').select('*').order('sort_order'),
-      supabase.from('settings').select('*'),
-      supabase.from('products').select('*,categories(*)').eq('featured', true).eq('sold_out', false).limit(4),
-      supabase.from('products').select('*,categories(*)').eq('new_arrival', true).eq('sold_out', false).order('created_at', { ascending: false }).limit(8),
-    ])
+    supabase
+      ? await Promise.all([
+          supabase.from('categories').select('*').order('sort_order'),
+          supabase.from('settings').select('*'),
+          supabase.from('products').select('*,categories(*)').eq('featured', true).eq('sold_out', false).limit(4),
+          supabase.from('products').select('*,categories(*)').eq('new_arrival', true).eq('sold_out', false).order('created_at', { ascending: false }).limit(8),
+        ])
+      : [{ data: null }, { data: null }, { data: null }, { data: null }]
 
   let filteredProducts: Product[] = []
-  const cats = (categories || []) as Category[]
+  const dbCategories = (categories || []) as Category[]
   const settingsRows = (settings || []) as { key: string; value: string }[]
-  const featuredProducts = (featured || []) as Product[]
-  const newArrivalProducts = (newArrivals || []) as Product[]
+  const usingDemoData = dbCategories.length === 0 && !featured?.length && !newArrivals?.length
+  const cats = dbCategories.length > 0 ? dbCategories : demoCategories
+  const featuredProducts = ((featured || []) as Product[]).length > 0
+    ? (featured || []) as Product[]
+    : demoProducts.filter(product => product.featured)
+  const newArrivalProducts = ((newArrivals || []) as Product[]).length > 0
+    ? (newArrivals || []) as Product[]
+    : demoProducts.filter(product => product.new_arrival)
 
   if (selectedCat !== 'all') {
     const catId = cats.find((c: Category) => c.slug === selectedCat)?.id
     if (catId) {
-      const { data } = await supabase
-        .from('products')
-        .select('*,categories(*)')
-        .eq('sold_out', false)
-        .eq('category_id', catId)
-        .order('created_at', { ascending: false })
-      filteredProducts = (data || []) as Product[]
+      if (usingDemoData || catId.startsWith('demo-cat-')) {
+        filteredProducts = demoProducts.filter(product => product.category_id === catId && !product.sold_out)
+      } else if (supabase) {
+        const { data } = await supabase
+          .from('products')
+          .select('*,categories(*)')
+          .eq('sold_out', false)
+          .eq('category_id', catId)
+          .order('created_at', { ascending: false })
+        filteredProducts = (data || []) as Product[]
+      }
     }
   }
 
-  const waNumber = settingsRows.find(s => s.key === 'whatsapp_number')?.value || '919999999999'
+  const waNumber = settingsRows.find(s => s.key === 'whatsapp_number')?.value || DEFAULT_WHATSAPP_NUMBER
 
   return (
     <div className="page-enter">
@@ -55,8 +69,24 @@ export default async function HomePage({
             <span className="w-1.5 h-1.5 rounded-full bg-bnb-gold animate-pulse-gold" />
             New arrivals added daily
           </div>
+          <div className="mt-5 grid grid-cols-3 gap-2 max-w-xs">
+            {['Phone covers', 'Wholesale lots', 'WhatsApp inquiry'].map(label => (
+              <div key={label} className="rounded-2xl border border-bnb-gold/20 bg-white/5 px-2 py-2 text-center text-[9px] font-semibold text-bnb-gold-light">
+                {label}
+              </div>
+            ))}
+          </div>
         </div>
       </div>
+
+      {usingDemoData && (
+        <div className="mx-4 mt-3 rounded-2xl border border-bnb-gold/30 bg-white px-4 py-3 shadow-sm animate-fade-up">
+          <div className="text-[10px] font-bold uppercase tracking-widest text-bnb-gold">Demo catalog preview</div>
+          <p className="mt-1 text-[11px] leading-relaxed text-bnb-muted">
+            Your Supabase catalog is empty, so BNB is showing mobile-cover sample lots. Add real lots from Admin and these previews will step aside.
+          </p>
+        </div>
+      )}
 
       <SearchBar />
 
@@ -106,6 +136,13 @@ export default async function HomePage({
               <ProductCard key={p.id} product={p} waNumber={waNumber} animationDelay={i * 0.04} />
             ))}
           </div>
+          {filteredProducts.length === 0 && (
+            <div className="rounded-3xl border border-bnb-sand bg-white p-6 text-center">
+              <div className="text-4xl mb-3">📱</div>
+              <p className="text-sm font-semibold text-bnb-dark">No covers in this category yet</p>
+              <p className="mt-1 text-[11px] leading-relaxed text-bnb-muted">Add lots from Admin or browse the demo collection while your stock is being uploaded.</p>
+            </div>
+          )}
         </section>
       )}
 

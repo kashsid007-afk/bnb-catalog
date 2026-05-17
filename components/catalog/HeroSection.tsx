@@ -16,7 +16,7 @@ export function HeroSection({ storeName }: { storeName: string }) {
       </p>
       <h1 className="text-base font-semibold text-white max-w-[200px] leading-snug mb-4 animate-fade-up"
           style={{ animationDelay: '0.15s' }}>
-        Premium Mobile Accessories
+        Premium Mobile Covers
       </h1>
 
       <div className="inline-flex items-center gap-2 border border-bnb-gold/30 rounded-full px-3 py-1.5 animate-fade-up"

@@ -67,9 +67,9 @@ export function LotForm({ categories, initialData, mode }: Props) {
       if (file.size > 15 * 1024 * 1024) { toast.error(`${file.name} too large (max 15MB)`); continue }
       const ext = file.name.split('.').pop()
       const path = `products/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`
-      const { error } = await supabase.storage.from('product-media').upload(path, file, { cacheControl: '3600' })
+      const { error } = await supabase.storage.from('product-images').upload(path, file, { cacheControl: '3600' })
       if (error) { toast.error(`Upload failed: ${file.name}`); continue }
-      const { data: { publicUrl } } = supabase.storage.from('product-media').getPublicUrl(path)
+      const { data: { publicUrl } } = supabase.storage.from('product-images').getPublicUrl(path)
       if (file.type.startsWith('video/')) {
         setVideoUrl(publicUrl)
       } else {
@@ -143,7 +143,7 @@ export function LotForm({ categories, initialData, mode }: Props) {
       lot_code: lotCode.trim().toUpperCase(),
       name: name.trim(),
       slug,
-      category_id: categoryId || null,
+      category_id: categoryId && !categoryId.startsWith('demo-cat-') ? categoryId : null,
       features: features.split(',').map(f => f.trim()).filter(Boolean),
       colour_mix: colourMix.trim() || null,
       pack_size: packSize ? parseInt(packSize) : null,

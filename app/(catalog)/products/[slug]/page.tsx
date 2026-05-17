@@ -2,6 +2,8 @@ import { createClient } from '@/lib/supabase/server'
 import { notFound } from 'next/navigation'
 import { ProductGallery } from '@/components/catalog/ProductGallery'
 import { FeaturePills, ModelsList, WhatsAppButtons, BackButton, ShareButton } from '@/components/catalog/misc'
+import { DEFAULT_WHATSAPP_NUMBER, demoProducts } from '@/lib/demo-data'
+import { hasSupabaseConfig } from '@/lib/supabase/config'
 import type { Product } from '@/types'
 
 export const revalidate = 60
@@ -12,26 +14,27 @@ export default async function ProductPage({
   params: Promise<{ slug: string }>
 }) {
   const { slug } = await params
-  const supabase = await createClient()
+  const supabase = hasSupabaseConfig() ? await createClient() : null
 
   const [{ data: product }, { data: settingsRows }] = await Promise.all([
-    supabase.from('products').select('*, category:categories(*)').eq('slug', slug).single(),
-    supabase.from('settings').select('key, value'),
+    supabase ? supabase.from('products').select('*, category:categories(*)').eq('slug', slug).single() : { data: null },
+    supabase ? supabase.from('settings').select('key, value') : { data: null },
   ])
 
-  if (!product) notFound()
+  const fallbackProduct = demoProducts.find(item => item.slug === slug)
+  if (!product && !fallbackProduct) notFound()
 
   const settings = {
-  whatsapp_number: '919999999999',
-  store_name: 'BNB Wholesale',
-  announcement: null,
-}
+    whatsapp_number: DEFAULT_WHATSAPP_NUMBER,
+    store_name: 'BNB Wholesale',
+    announcement: null,
+  }
   settingsRows?.forEach(row => {
     if (row.key === 'whatsapp_number') settings.whatsapp_number = row.value
     if (row.key === 'store_name') settings.store_name = row.value
   })
 
-  const p = product as Product
+  const p = (product || fallbackProduct) as Product
   const totalModels = Object.values(p.models ?? {}).reduce((s, a) => s + a.length, 0)
   const brandCount = Object.keys(p.models ?? {}).length
 

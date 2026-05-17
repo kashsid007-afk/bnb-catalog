@@ -101,10 +101,47 @@ create policy "admin_delete_storage" on storage.objects for delete using (bucket
 insert into categories (name, slug, sort_order) values
   ('iPhone Covers', 'iphone-covers', 1),
   ('Samsung Covers', 'samsung-covers', 2),
-  ('Oppo / Vivo Covers', 'oppo-vivo-covers', 3),
-  ('Premium Cases', 'premium-cases', 4),
-  ('Silicone Cases', 'silicone-cases', 5),
-  ('Tempered Glass', 'tempered-glass', 6),
-  ('Chargers', 'chargers', 7),
-  ('Accessories', 'accessories', 8)
+  ('Transparent Cases', 'transparent-cases', 3),
+  ('Silicone Covers', 'silicone-covers', 4),
+  ('MagSafe Covers', 'magsafe-covers', 5),
+  ('Rugged Covers', 'rugged-covers', 6)
 on conflict (slug) do nothing;
+
+-- SAMPLE MOBILE COVER PRODUCTS
+insert into products (
+  lot_code, name, slug, description, category_id, features, pack_size, colour_mix,
+  total_lot_size, models, image_urls, featured, new_arrival, sold_out
+) values
+  (
+    'DEMO-101',
+    'iPhone 15 Pro Max MagSafe Covers',
+    'demo-iphone-15-pro-max-magsafe-covers',
+    'Premium MagSafe-compatible back covers with soft-touch finish and camera protection.',
+    (select id from categories where slug = 'magsafe-covers'),
+    array['MagSafe ring', 'Camera guard', 'Premium matte finish'],
+    10,
+    '3 Black, 3 Clear, 2 Titanium, 2 Blue',
+    60,
+    '{"iPhone":["15 Pro Max","15 Pro","16 Pro Max","16 Pro"]}'::jsonb,
+    '{}',
+    true,
+    true,
+    false
+  ),
+  (
+    'DEMO-102',
+    'Samsung S24 Ultra Transparent Cases',
+    'demo-samsung-s24-ultra-transparent-cases',
+    'Crystal clear TPU cases made for daily wholesale movement.',
+    (select id from categories where slug = 'transparent-cases'),
+    array['Anti-yellow TPU', 'Slim profile', 'Raised edges'],
+    10,
+    '10 Clear per model',
+    70,
+    '{"Samsung":["S24 Ultra","S24","S23 Ultra","A55","A35","A15","A06"]}'::jsonb,
+    '{}',
+    true,
+    true,
+    false
+  )
+on conflict (lot_code) do nothing;

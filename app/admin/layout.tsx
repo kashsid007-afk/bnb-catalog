@@ -1,12 +1,13 @@
+'use client'
+
 import Link from 'next/link'
-import { redirect } from 'next/navigation'
-import { createClient } from '@/lib/supabase/server'
+import { usePathname } from 'next/navigation'
 import { LayoutGrid, Plus, Settings, LogOut } from 'lucide-react'
 
-export default async function AdminLayout({ children }: { children: React.ReactNode }) {
-  const supabase = await createClient()
-  const { data: { session } } = await supabase.auth.getSession()
-  if (!session) redirect('/admin/login')
+export default function AdminLayout({ children }: { children: React.ReactNode }) {
+  const pathname = usePathname()
+
+  if (pathname === '/admin/login') return <>{children}</>
 
   return (
     <div className="min-h-screen bg-bnb-cream">

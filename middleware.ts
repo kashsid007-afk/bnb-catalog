@@ -1,6 +1,7 @@
 import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 import type { CookieOptions } from '@supabase/ssr'
+import { getSupabaseConfig } from './lib/supabase/config'
 
 type CookieToSet = {
   name: string
@@ -9,11 +10,19 @@ type CookieToSet = {
 }
 
 export async function middleware(request: NextRequest) {
+  const isLoginRoute = request.nextUrl.pathname === '/admin/login'
+  if (isLoginRoute) return NextResponse.next({ request })
+
+  const config = getSupabaseConfig()
+  if (!config) {
+    return NextResponse.redirect(new URL('/admin/login', request.url))
+  }
+
   let supabaseResponse = NextResponse.next({ request })
 
   const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    config.url,
+    config.anonKey,
     {
       cookies: {
         getAll() { return request.cookies.getAll() },
@@ -27,10 +36,7 @@ export async function middleware(request: NextRequest) {
   )
 
   const { data: { user } } = await supabase.auth.getUser()
-  const isAdminRoute = request.nextUrl.pathname.startsWith('/admin') &&
-    !request.nextUrl.pathname.startsWith('/admin/login')
-
-  if (isAdminRoute && !user) {
+  if (!user) {
     return NextResponse.redirect(new URL('/admin/login', request.url))
   }
 

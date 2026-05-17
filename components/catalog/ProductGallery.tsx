@@ -41,7 +41,12 @@ export function ProductGallery({ images, videoUrl, productName }: Props) {
               priority={active === 0}
             />
           ) : (
-            <div className="w-full h-full flex items-center justify-center text-6xl">📦</div>
+            <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-bnb-cream via-white to-bnb-gold-light/50">
+              <div className="text-center">
+                <div className="text-7xl">📱</div>
+                <div className="mt-3 text-[10px] font-bold tracking-[0.24em] text-bnb-gold">MOBILE COVER LOT</div>
+              </div>
+            </div>
           )}
         </div>
 

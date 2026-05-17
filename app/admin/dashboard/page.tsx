@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 import { Plus, Edit, Trash2, Zap } from 'lucide-react'
+import { demoProducts } from '@/lib/demo-data'
 import type { Product } from '@/types'
 
 type ProductStatusRow = Pick<Product, 'id' | 'new_arrival' | 'featured' | 'sold_out'>
@@ -21,6 +22,7 @@ export default async function DashboardPage() {
   }
 
   const productRows = (products || []) as Product[]
+  const hasProducts = productRows.length > 0
 
   return (
     <div className="page-enter space-y-5">
@@ -72,7 +74,7 @@ export default async function DashboardPage() {
           <span className="text-[10px] text-bnb-muted">{stats.total} total</span>
         </div>
         <div className="space-y-2.5">
-          {productRows.map((p, i) => (
+          {(hasProducts ? productRows : demoProducts.slice(0, 3)).map((p, i) => (
             <div
               key={p.id}
               className="bg-white border border-bnb-sand rounded-2xl p-3 flex items-center gap-3 animate-fade-up"
@@ -81,7 +83,7 @@ export default async function DashboardPage() {
               <div className="w-12 h-12 rounded-xl bg-bnb-cream flex-shrink-0 overflow-hidden">
                 {p.image_urls?.[0]
                   ? <img src={p.image_urls[0]} alt={p.name} className="w-full h-full object-cover" />
-                  : <div className="w-full h-full flex items-center justify-center text-xl">📦</div>
+                  : <div className="w-full h-full flex items-center justify-center text-xl">📱</div>
                 }
               </div>
               <div className="flex-1 min-w-0">
@@ -94,15 +96,26 @@ export default async function DashboardPage() {
                 </div>
               </div>
               <div className="flex items-center gap-1.5">
-                <Link href={`/admin/products/${p.id}`}
-                  className="w-8 h-8 rounded-xl bg-bnb-cream border border-bnb-sand flex items-center justify-center btn-spring">
-                  <Edit size={13} className="text-bnb-brown" />
-                </Link>
-                <DeleteButton id={p.id} />
+                {hasProducts ? (
+                  <>
+                    <Link href={`/admin/products/${p.id}`}
+                      className="w-8 h-8 rounded-xl bg-bnb-cream border border-bnb-sand flex items-center justify-center btn-spring">
+                      <Edit size={13} className="text-bnb-brown" />
+                    </Link>
+                    <DeleteButton id={p.id} />
+                  </>
+                ) : (
+                  <span className="rounded-full bg-bnb-cream px-2 py-1 text-[9px] font-semibold text-bnb-muted">Demo</span>
+                )}
               </div>
             </div>
           ))}
         </div>
+        {!hasProducts && (
+          <div className="mt-3 rounded-2xl border border-bnb-gold/30 bg-bnb-gold/10 p-3 text-[11px] leading-relaxed text-bnb-brown">
+            These are demo mobile-cover lots because your products table is empty. Use Add Lot to publish real stock.
+          </div>
+        )}
       </div>
     </div>
   )

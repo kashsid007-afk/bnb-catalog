@@ -3,6 +3,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { MessageCircle, Bookmark, BookmarkCheck } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { productEmoji } from '@/lib/demo-data'
 import type { Product } from '@/types'
 
 interface Props {
@@ -16,6 +17,7 @@ interface Props {
 export function ProductCard({ product, waNumber, onAddToTray, inTray, animationDelay = 0 }: Props) {
   const imgSrc = product.image_urls?.[0]
   const totalModels = Object.values(product.models || {}).reduce((s, a) => s + a.length, 0)
+  const emoji = productEmoji(product)
 
   return (
     <div
@@ -31,8 +33,11 @@ export function ProductCard({ product, waNumber, onAddToTray, inTray, animationD
               sizes="(max-width: 768px) 50vw, 25vw"
             />
           ) : (
-            <div className="w-full h-full flex items-center justify-center">
-              <span className="text-5xl">📦</span>
+            <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-bnb-cream via-white to-bnb-gold-light/50">
+              <div className="text-center">
+                <span className="text-5xl drop-shadow-sm">{emoji}</span>
+                <div className="mt-3 text-[9px] font-bold tracking-[0.22em] text-bnb-gold">MOBILE COVERS</div>
+              </div>
             </div>
           )}
 
