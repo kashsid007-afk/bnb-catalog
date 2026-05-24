@@ -10,8 +10,10 @@ type CookieToSet = {
 }
 
 export async function middleware(request: NextRequest) {
-  const isLoginRoute = request.nextUrl.pathname === '/admin/login'
-  if (isLoginRoute) return NextResponse.next({ request })
+  const publicAdminRoutes = ['/admin/login', '/admin/update-password']
+  if (publicAdminRoutes.includes(request.nextUrl.pathname)) {
+    return NextResponse.next({ request })
+  }
 
   const config = getSupabaseConfig()
   if (!config) {

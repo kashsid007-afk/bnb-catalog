@@ -7,7 +7,7 @@ import { LayoutGrid, Plus, Settings, LogOut } from 'lucide-react'
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
 
-  if (pathname === '/admin/login') return <>{children}</>
+  if (pathname === '/admin/login' || pathname === '/admin/update-password') return <>{children}</>
 
   return (
     <div className="min-h-screen bg-bnb-cream">
