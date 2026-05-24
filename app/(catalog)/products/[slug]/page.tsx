@@ -1,7 +1,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { notFound } from 'next/navigation'
 import { ProductGallery } from '@/components/catalog/ProductGallery'
-import { FeaturePills, ModelsList, WhatsAppButtons, BackButton, ShareButton } from '@/components/catalog/misc'
+import { FeaturePills, ProductModelSelector, BackButton, ShareButton } from '@/components/catalog/misc'
 import { DEFAULT_WHATSAPP_NUMBER, demoProducts } from '@/lib/demo-data'
 import { hasSupabaseConfig } from '@/lib/supabase/config'
 import type { Product } from '@/types'
@@ -51,8 +51,9 @@ export default async function ProductPage({
         <h1 className="text-xl font-bold text-bnb-dark leading-tight mb-3">{p.name}</h1>
 
         <div className="flex gap-2 mb-4">
+          {p.featured && <span className="px-3 py-1 rounded-full text-xs font-semibold bg-bnb-dark text-bnb-gold">Hot Pick</span>}
           {p.new_arrival && <span className="px-3 py-1 rounded-full text-xs font-semibold bg-bnb-gold-light text-bnb-brown">New Arrival</span>}
-          {p.featured && <span className="px-3 py-1 rounded-full text-xs font-semibold bg-bnb-dark text-bnb-gold">Featured</span>}
+          {!p.sold_out && <span className="px-3 py-1 rounded-full text-xs font-semibold bg-white border border-bnb-sand text-bnb-brown">Ready Stock</span>}
           {p.sold_out && <span className="px-3 py-1 rounded-full text-xs font-semibold bg-gray-100 text-gray-400">Sold Out</span>}
         </div>
 
@@ -89,10 +90,8 @@ export default async function ProductPage({
         </div>
 
         {p.description && <p className="text-sm text-bnb-muted leading-relaxed mb-4">{p.description}</p>}
-        {totalModels > 0 && <ModelsList models={p.models} />}
-
         {!p.sold_out
-          ? <WhatsAppButtons product={p} waNumber={settings.whatsapp_number} />
+          ? <ProductModelSelector product={p} waNumber={settings.whatsapp_number} />
           : <div className="w-full py-4 bg-gray-100 rounded-2xl text-center text-sm text-gray-400 font-medium mb-4">This lot is sold out</div>
         }
       </div>

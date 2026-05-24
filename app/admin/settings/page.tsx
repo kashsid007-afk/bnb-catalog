@@ -36,9 +36,9 @@ export default function SettingsPage() {
           <label className="text-[10px] font-bold text-bnb-muted uppercase tracking-widest block mb-1.5">WhatsApp Number</label>
           <input
             type="tel" value={waNumber} onChange={e => setWaNumber(e.target.value)}
-            className="field-input" placeholder="919999999999 (with country code)"
+            className="field-input" placeholder="917666288880 (with country code)"
           />
-          <p className="text-[9px] text-bnb-muted mt-1">Include country code, no + or spaces. e.g. 919876543210</p>
+          <p className="text-[9px] text-bnb-muted mt-1">Include country code, no + or spaces. e.g. 917666288880</p>
         </div>
       </div>
 

@@ -40,11 +40,18 @@ export interface SettingsMap {
   announcement: string | null
 }
 
+export interface SelectedModel {
+  brand: string
+  model: string
+  qty: number
+}
+
 export interface TrayItem {
   id: string
   lot_code: string
   name: string
   emoji?: string
   models: ModelMap
-  qty: number
+  selections: SelectedModel[]
+  qty?: number
 }

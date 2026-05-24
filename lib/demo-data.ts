@@ -1,9 +1,10 @@
 import type { Category, Product } from '@/types'
+import { BNB_WHATSAPP_NUMBER } from '@/lib/whatsapp'
 
 const now = new Date('2026-01-01T00:00:00.000Z').toISOString()
 
 export const DEFAULT_WHATSAPP_NUMBER =
-  process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || '919999999999'
+  BNB_WHATSAPP_NUMBER
 
 export const demoCategories: Category[] = [
   { id: 'demo-cat-iphone', name: 'iPhone Covers', slug: 'iphone-covers', image_url: null, sort_order: 1 },
@@ -16,18 +17,18 @@ export const demoCategories: Category[] = [
 
 export const demoProducts: Product[] = [
   {
-    id: 'demo-iphone-15-pro-max-covers',
+    id: 'demo-spigen-3d-case',
     lot_code: 'DEMO-101',
-    name: 'iPhone 15 Pro Max MagSafe Covers',
-    slug: 'demo-iphone-15-pro-max-magsafe-covers',
-    description: 'Premium MagSafe-compatible back covers with soft-touch finish and camera protection.',
+    name: 'SPIGEN 3D CASE',
+    slug: 'demo-spigen-3d-case',
+    description: 'Premium shockproof wholesale collection with 3D side texture and raised camera protection.',
     category_id: 'demo-cat-magsafe',
     categories: demoCategories[4],
     features: ['MagSafe ring', 'Camera guard', 'Premium matte finish'],
     pack_size: 10,
     colour_mix: '3 Black, 3 Clear, 2 Titanium, 2 Blue',
     total_lot_size: 60,
-    models: { iPhone: ['15 Pro Max', '15 Pro', '16 Pro Max', '16 Pro'] },
+    models: { Apple: ['iPhone 15', 'iPhone 15 Pro', 'iPhone 15 Pro Max', 'iPhone 16 Pro'], Samsung: ['S24 Ultra', 'S25 Ultra'] },
     image_urls: [],
     video_url: null,
     featured: true,
@@ -36,18 +37,18 @@ export const demoProducts: Product[] = [
     created_at: now,
   },
   {
-    id: 'demo-samsung-s24-ultra-covers',
+    id: 'demo-dulero-magsafe-pc-case',
     lot_code: 'DEMO-102',
-    name: 'Samsung S24 Ultra Transparent Cases',
-    slug: 'demo-samsung-s24-ultra-transparent-cases',
-    description: 'Crystal clear TPU cases made for daily wholesale movement.',
+    name: 'DULERO MAGSAFE PC CASE',
+    slug: 'demo-dulero-magsafe-pc-case',
+    description: 'Clear hard PC MagSafe case for premium counters and fast-moving wholesale lots.',
     category_id: 'demo-cat-transparent',
     categories: demoCategories[2],
     features: ['Anti-yellow TPU', 'Slim profile', 'Raised edges'],
     pack_size: 10,
     colour_mix: '10 Clear per model',
     total_lot_size: 70,
-    models: { Samsung: ['S24 Ultra', 'S24', 'S23 Ultra', 'A55', 'A35', 'A15', 'A06'] },
+    models: { Apple: ['iPhone 14', 'iPhone 15', 'iPhone 15 Pro Max'], Samsung: ['S24 Ultra', 'S24', 'S23 Ultra'], OnePlus: ['12R', '13R'] },
     image_urls: [],
     video_url: null,
     featured: true,
@@ -58,7 +59,7 @@ export const demoProducts: Product[] = [
   {
     id: 'demo-silicone-soft-covers',
     lot_code: 'DEMO-103',
-    name: 'Soft Silicone Mobile Covers',
+    name: 'PREMIUM SILICONE CASE',
     slug: 'demo-soft-silicone-mobile-covers',
     description: 'Smooth silicone back covers in fast-moving colours for mixed lots.',
     category_id: 'demo-cat-silicone',
@@ -67,7 +68,7 @@ export const demoProducts: Product[] = [
     pack_size: 10,
     colour_mix: 'Black, Lavender, Blue, Wine, Forest',
     total_lot_size: 80,
-    models: { iPhone: ['13', '14', '15', '15 Plus'], Samsung: ['A15', 'A35', 'S23 FE'], Vivo: ['V50', 'Y29'] },
+    models: { Apple: ['iPhone 13', 'iPhone 14', 'iPhone 15', 'iPhone 15 Plus'], Samsung: ['A15', 'A35', 'S23 FE'], Vivo: ['V50', 'Y29'] },
     image_urls: [],
     video_url: null,
     featured: false,
@@ -78,7 +79,7 @@ export const demoProducts: Product[] = [
   {
     id: 'demo-premium-leather-cases',
     lot_code: 'DEMO-104',
-    name: 'Premium Leather Finish Cases',
+    name: 'PREMIUM LEATHER CASE',
     slug: 'demo-premium-leather-finish-cases',
     description: 'Executive leather-finish covers for premium counters and gifting demand.',
     category_id: 'demo-cat-iphone',
@@ -87,7 +88,7 @@ export const demoProducts: Product[] = [
     pack_size: 6,
     colour_mix: '2 Brown, 2 Black, 2 Tan',
     total_lot_size: 36,
-    models: { iPhone: ['14 Pro Max', '15 Pro Max', '16 Pro Max'], Samsung: ['S24 Ultra', 'S23 Ultra', 'S25 Ultra'] },
+    models: { Apple: ['iPhone 14 Pro Max', 'iPhone 15 Pro Max', 'iPhone 16 Pro Max'], Samsung: ['S24 Ultra', 'S23 Ultra', 'S25 Ultra'] },
     image_urls: [],
     video_url: null,
     featured: true,
@@ -98,7 +99,7 @@ export const demoProducts: Product[] = [
   {
     id: 'demo-printed-anime-covers',
     lot_code: 'DEMO-105',
-    name: 'Printed Anime Back Covers',
+    name: 'PRINTED ANIME CASE',
     slug: 'demo-printed-anime-back-covers',
     description: 'Trendy printed phone covers for youth-focused retail counters.',
     category_id: 'demo-cat-rugged',
@@ -107,7 +108,7 @@ export const demoProducts: Product[] = [
     pack_size: 12,
     colour_mix: '12 assorted prints per model',
     total_lot_size: 72,
-    models: { iPhone: ['13', '14', '15'], OnePlus: ['Nord 4', '12R'], Oppo: ['Reno14', 'F29 Pro'] },
+    models: { Apple: ['iPhone 13', 'iPhone 14', 'iPhone 15'], OnePlus: ['Nord 4', '12R'], Oppo: ['Reno14', 'F29 Pro'] },
     image_urls: [],
     video_url: null,
     featured: false,
@@ -118,7 +119,7 @@ export const demoProducts: Product[] = [
   {
     id: 'demo-rugged-armor-covers',
     lot_code: 'DEMO-106',
-    name: 'Rugged Armor Mobile Cases',
+    name: 'RUGGED ARMOR CASE',
     slug: 'demo-rugged-armor-mobile-cases',
     description: 'Heavy-duty back covers with corner bumpers for protection-focused buyers.',
     category_id: 'demo-cat-rugged',

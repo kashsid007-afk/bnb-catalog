@@ -6,13 +6,17 @@ import toast from 'react-hot-toast'
 import { Upload, X, Plus, CheckCircle2 } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { parseBroadcastModels, slugify } from '@/lib/utils'
+import { uploadToCloudinary } from '@/lib/cloudinary'
 import type { Product, Category } from '@/types'
 
-const BRANDS = ['Samsung','iPhone','Vivo','Oppo','OnePlus','Mi/Xiaomi','Google','Nothing','Realme','Motorola']
+const CLOUD_NAME = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME
+const UPLOAD_PRESET = process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET
+
+const BRANDS = ['Samsung','Apple','Vivo','Oppo','OnePlus','Mi/Xiaomi','Google','Nothing','Realme','Motorola','Tecno','Infinix']
 
 const BRAND_MODELS: Record<string, string[]> = {
   Samsung: ['A06','A07','A14','A15','A16','A17','A35','A36','A55','A56','M35','M36','M56','S20fe','S21fe','S22','S22 Ultra','S23','S23fe','S23 Ultra','S24','S24 Ultra','S24fe','S25','S25fe','S25 Ultra'],
-  iPhone: ['11','12','13','14','15','15 Plus','15 Pro','15 Pro Max','16','16 Plus','16 Pro','16 Pro Max','17','17 Plus','17 Pro','17 Pro Max'],
+  Apple: ['iPhone 11','iPhone 12','iPhone 13','iPhone 14','iPhone 15','iPhone 15 Plus','iPhone 15 Pro','iPhone 15 Pro Max','iPhone 16','iPhone 16 Plus','iPhone 16 Pro','iPhone 16 Pro Max'],
   Vivo: ['Y16','Y18','Y19e','Y20i','Y21','Y29','Y31','Y31 Pro','Y39','Y400','Y400 Pro','V40e','V50','V50e','V60','V60e','X200','X200 Pro','X200fe'],
   Oppo: ['A5','A5 Pro','F31','F31 Pro','F29','F29 Pro','Reno13','Reno14','Reno14 Pro'],
   OnePlus: ['Nord 2','Nord 2T','Nord 3','Nord 4','Nord 5','Ce2 Lite','Ce3 Lite','Ce4 Lite','Nord CE5','9R','10R','11R','12R','13R','13S'],
@@ -21,6 +25,8 @@ const BRAND_MODELS: Record<string, string[]> = {
   Nothing: ['Nothing 1','Nothing 2','Nothing 3','Nothing 3A','Nothing 3A Pro','CMF1','CMF2'],
   Realme: ['Realme 15','Realme 15x','Realme 15T','Realme 15 Pro'],
   Motorola: ['Edge 50 Fusion','Edge 60 Fusion'],
+  Tecno: ['Spark 20','Spark 30','Camon 30','Camon 40 Pro'],
+  Infinix: ['Hot 40','Hot 50','Note 40','Note 50 Pro'],
 }
 
 interface Props {
@@ -61,19 +67,32 @@ export function LotForm({ categories, initialData, mode }: Props) {
   // --- Media upload ---
   const onDrop = useCallback(async (files: File[]) => {
     setUploading(true)
-    const supabase = createClient()
     const urls: string[] = []
     for (const file of files) {
       if (file.size > 15 * 1024 * 1024) { toast.error(`${file.name} too large (max 15MB)`); continue }
-      const ext = file.name.split('.').pop()
-      const path = `products/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`
-      const { error } = await supabase.storage.from('product-images').upload(path, file, { cacheControl: '3600' })
-      if (error) { toast.error(`Upload failed: ${file.name}`); continue }
-      const { data: { publicUrl } } = supabase.storage.from('product-images').getPublicUrl(path)
-      if (file.type.startsWith('video/')) {
-        setVideoUrl(publicUrl)
-      } else {
-        urls.push(publicUrl)
+
+      try {
+        let publicUrl: string
+
+        if (CLOUD_NAME && UPLOAD_PRESET) {
+          publicUrl = await uploadToCloudinary(file, CLOUD_NAME, UPLOAD_PRESET)
+        } else {
+          const supabase = createClient()
+          const ext = file.name.split('.').pop()
+          const path = `products/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`
+          const { error } = await supabase.storage.from('product-images').upload(path, file, { cacheControl: '3600' })
+          if (error) throw error
+          const { data: { publicUrl: supabaseUrl } } = supabase.storage.from('product-images').getPublicUrl(path)
+          publicUrl = supabaseUrl
+        }
+
+        if (file.type.startsWith('video/')) {
+          setVideoUrl(publicUrl)
+        } else {
+          urls.push(publicUrl)
+        }
+      } catch {
+        toast.error(`Upload failed: ${file.name}`)
       }
     }
     setUploadedImages(prev => [...prev, ...urls])
@@ -241,9 +260,11 @@ export function LotForm({ categories, initialData, mode }: Props) {
               <input {...getInputProps()} />
               <Upload size={22} className="mx-auto text-bnb-muted mb-2" />
               <p className="text-[11px] text-bnb-muted">
-                {uploading ? 'Uploading...' : isDragActive ? 'Drop here' : 'Drag & drop photos/video, or tap to select'}
+                {uploading ? 'Uploading...' : isDragActive ? 'Drop here' : 'Upload photos/video, then paste model list'}
               </p>
-              <p className="text-[10px] text-bnb-muted/60 mt-1">JPG, PNG, WebP, MP4 · Max 15MB each</p>
+              <p className="text-[10px] text-bnb-muted/60 mt-1">
+                {CLOUD_NAME && UPLOAD_PRESET ? 'Cloudinary CDN enabled' : 'Supabase storage fallback'} · JPG, PNG, WebP, MP4 · Max 15MB each
+              </p>
             </div>
 
             {(uploadedImages.length > 0 || videoUrl) && (
@@ -294,7 +315,7 @@ export function LotForm({ categories, initialData, mode }: Props) {
             <textarea
               value={pasteText} onChange={e => setPasteText(e.target.value)}
               className="w-full px-4 py-3 text-[11px] font-mono text-bnb-dark min-h-[100px] outline-none resize-none"
-              placeholder={"👉🏻Samsung :\nA06. 10\nA07. 10\n...\n👉🏻iPhone :\n15-20\n16-20"}
+              placeholder={"APPLE\niPhone 15\niPhone 15 Pro\niPhone 15 Pro Max\n\nSAMSUNG\nS24\nS24 Ultra\n\nVIVO\nV40\nV40 Pro"}
             />
             <button
               onClick={parsePaste}

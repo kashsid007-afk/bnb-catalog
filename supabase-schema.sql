@@ -43,7 +43,7 @@ create table if not exists settings (
 
 -- Default settings
 insert into settings (key, value) values
-  ('whatsapp_number', '919999999999'),
+  ('whatsapp_number', '917666288880'),
   ('announcement_banner', '')
 on conflict (key) do nothing;
 
@@ -64,15 +64,15 @@ insert into products (
 ) values
   (
     'DEMO-101',
-    'iPhone 15 Pro Max MagSafe Covers',
-    'demo-iphone-15-pro-max-magsafe-covers',
-    'Premium MagSafe-compatible back covers with soft-touch finish and camera protection.',
+    'SPIGEN 3D CASE',
+    'demo-spigen-3d-case',
+    'Premium shockproof wholesale collection with 3D side texture and raised camera protection.',
     (select id from categories where slug = 'magsafe-covers'),
     array['MagSafe ring', 'Camera guard', 'Premium matte finish'],
     10,
     '3 Black, 3 Clear, 2 Titanium, 2 Blue',
     60,
-    '{"iPhone":["15 Pro Max","15 Pro","16 Pro Max","16 Pro"]}'::jsonb,
+    '{"Apple":["iPhone 15","iPhone 15 Pro","iPhone 15 Pro Max","iPhone 16 Pro"],"Samsung":["S24 Ultra","S25 Ultra"]}'::jsonb,
     '{}',
     true,
     true,
@@ -80,15 +80,15 @@ insert into products (
   ),
   (
     'DEMO-102',
-    'Samsung S24 Ultra Transparent Cases',
-    'demo-samsung-s24-ultra-transparent-cases',
-    'Crystal clear TPU cases made for daily wholesale movement.',
+    'DULERO MAGSAFE PC CASE',
+    'demo-dulero-magsafe-pc-case',
+    'Clear hard PC MagSafe case for premium counters and fast-moving wholesale lots.',
     (select id from categories where slug = 'transparent-cases'),
-    array['Anti-yellow TPU', 'Slim profile', 'Raised edges'],
+    array['MagSafe ring', 'Hard PC', 'Anti-scratch'],
     10,
     '10 Clear per model',
     70,
-    '{"Samsung":["S24 Ultra","S24","S23 Ultra","A55","A35","A15","A06"]}'::jsonb,
+    '{"Apple":["iPhone 14","iPhone 15","iPhone 15 Pro Max"],"Samsung":["S24 Ultra","S24","S23 Ultra"],"OnePlus":["12R","13R"]}'::jsonb,
     '{}',
     true,
     true,

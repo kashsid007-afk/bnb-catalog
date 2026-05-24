@@ -1,83 +1,114 @@
 'use client'
-import { X, Minus, Plus, Trash2, MessageCircle } from 'lucide-react'
-import { buildTrayInquiry } from '@/lib/whatsapp'
+
+import { MessageCircle, Minus, Plus, Trash2, X } from 'lucide-react'
+import { buildTrayInquiry, buildTrayInquiryMessage } from '@/lib/whatsapp'
 import type { TrayItem } from '@/types'
 
 interface Props {
   items: TrayItem[]
   waNumber: string
   onUpdateQty: (id: string, qty: number) => void
+  onUpdateModelQty?: (id: string, brand: string, model: string, qty: number) => void
   onRemove: (id: string) => void
   onClear: () => void
   onClose: () => void
 }
 
-export function TrayDrawer({ items, waNumber, onUpdateQty, onRemove, onClear, onClose }: Props) {
-  const totalQty = items.reduce((s, i) => s + i.qty, 0)
+export function TrayDrawer({ items, waNumber, onUpdateQty, onUpdateModelQty, onRemove, onClear, onClose }: Props) {
+  const totalQty = items.reduce((sum, item) => (
+    sum + (item.selections.length
+      ? item.selections.reduce((selectionSum, selection) => selectionSum + selection.qty, 0)
+      : (item.qty ?? 1))
+  ), 0)
   const waUrl = buildTrayInquiry(items, waNumber)
 
   return (
     <div className="fixed inset-0 z-50 flex flex-col" style={{ background: 'rgba(58,46,37,0.6)' }}>
       <div className="flex-1" onClick={onClose} />
-      <div className="bg-bnb-cream rounded-t-3xl overflow-hidden animate-fade-up" style={{ maxHeight: '88vh', display: 'flex', flexDirection: 'column' }}>
-        <div className="bg-bnb-dark px-4 py-3.5 flex items-center justify-between flex-shrink-0">
+      <div className="flex max-h-[88vh] flex-col overflow-hidden rounded-t-3xl bg-bnb-cream animate-fade-up">
+        <div className="flex shrink-0 items-center justify-between bg-bnb-dark px-4 py-3.5">
           <div>
-            <div className="text-bnb-gold font-bold text-[15px] tracking-wide">Inquiry Tray</div>
-            <div className="text-bnb-muted text-[10px] mt-0.5">{items.length} lot{items.length !== 1 ? 's' : ''} · {totalQty} total</div>
+            <div className="text-[15px] font-bold tracking-wide text-bnb-gold">Inquiry Tray</div>
+            <div className="mt-0.5 text-[10px] text-bnb-muted">{items.length} lot{items.length !== 1 ? 's' : ''} · {totalQty} pcs</div>
           </div>
           <div className="flex items-center gap-2">
             {items.length > 0 && (
-              <button onClick={onClear} className="text-bnb-muted text-[11px] px-2 py-1 rounded-lg">Clear all</button>
+              <button onClick={onClear} className="rounded-lg px-2 py-1 text-[11px] text-bnb-muted">Clear all</button>
             )}
-            <button onClick={onClose} className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-bnb-gold-light">
+            <button onClick={onClose} className="flex h-8 w-8 items-center justify-center rounded-full bg-white/10 text-bnb-gold-light">
               <X size={15} />
             </button>
           </div>
         </div>
-        <div className="flex-1 overflow-y-auto p-4 space-y-3">
+
+        <div className="flex-1 space-y-3 overflow-y-auto p-4">
           {items.length === 0 ? (
-            <div className="text-center py-12 text-bnb-muted">
-              <div className="text-4xl mb-3 opacity-30">📋</div>
+            <div className="py-12 text-center text-bnb-muted">
+              <div className="mb-3 text-4xl opacity-30">📋</div>
               <div className="text-sm">Your tray is empty</div>
             </div>
           ) : (
-            items.map((item, i) => (
-              <div key={item.id}
-                className="bg-white rounded-2xl border border-bnb-sand p-3 flex items-center gap-3 animate-fade-up"
-                style={{ animationDelay: `${i * 40}ms` }}>
-                <div className="w-12 h-12 rounded-xl bg-bnb-cream flex items-center justify-center flex-shrink-0 text-[10px] font-bold text-bnb-gold border border-bnb-sand">
-                  {item.lot_code}
+            items.map((item, index) => (
+              <div key={item.id} className="animate-fade-up rounded-2xl border border-bnb-sand bg-white p-3" style={{ animationDelay: `${index * 40}ms` }}>
+                <div className="mb-2 flex items-start justify-between gap-2">
+                  <div className="min-w-0">
+                    <div className="truncate text-[12px] font-semibold text-bnb-dark">{item.name}</div>
+                    <div className="mt-0.5 text-[10px] text-bnb-muted">LOT {item.lot_code}</div>
+                  </div>
+                  <button onClick={() => onRemove(item.id)} className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl border border-red-100 bg-red-50 text-red-400 transition-all active:scale-90">
+                    <Trash2 size={13} />
+                  </button>
                 </div>
-                <div className="flex-1 min-w-0">
-                  <div className="text-[12px] font-semibold text-bnb-dark truncate">{item.name}</div>
-                  <div className="text-[10px] text-bnb-muted mt-0.5">LOT {item.lot_code}</div>
-                  <div className="flex items-center gap-2 mt-1.5">
-                    <button onClick={() => onUpdateQty(item.id, item.qty - 1)} className="w-6 h-6 rounded-lg border border-bnb-sand bg-bnb-cream flex items-center justify-center active:scale-90 transition-all">
+
+                {item.selections.length > 0 ? (
+                  <div className="space-y-1.5">
+                    {item.selections.map(selection => (
+                      <div key={`${selection.brand}-${selection.model}`} className="flex items-center justify-between gap-2 rounded-xl border border-bnb-sand bg-bnb-cream px-2.5 py-2">
+                        <div className="min-w-0">
+                          <div className="truncate text-[11px] font-semibold text-bnb-dark">{selection.model}</div>
+                          <div className="text-[8px] font-bold uppercase tracking-wide text-bnb-gold">{selection.brand}</div>
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <button
+                            onClick={() => onUpdateModelQty?.(item.id, selection.brand, selection.model, selection.qty - 1)}
+                            className="flex h-6 w-6 items-center justify-center rounded-lg border border-bnb-sand bg-white transition-all active:scale-90"
+                          >
+                            <Minus size={10} />
+                          </button>
+                          <span className="min-w-5 text-center text-[12px] font-bold text-bnb-dark">{selection.qty}</span>
+                          <button
+                            onClick={() => onUpdateModelQty?.(item.id, selection.brand, selection.model, selection.qty + 1)}
+                            className="flex h-6 w-6 items-center justify-center rounded-lg border border-bnb-sand bg-white transition-all active:scale-90"
+                          >
+                            <Plus size={10} />
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-2">
+                    <button onClick={() => onUpdateQty(item.id, (item.qty ?? 1) - 1)} className="flex h-6 w-6 items-center justify-center rounded-lg border border-bnb-sand bg-bnb-cream transition-all active:scale-90">
                       <Minus size={10} />
                     </button>
-                    <span className="text-[13px] font-bold text-bnb-dark min-w-[20px] text-center">{item.qty}</span>
-                    <button onClick={() => onUpdateQty(item.id, item.qty + 1)} className="w-6 h-6 rounded-lg border border-bnb-sand bg-bnb-cream flex items-center justify-center active:scale-90 transition-all">
+                    <span className="min-w-5 text-center text-[13px] font-bold text-bnb-dark">{item.qty ?? 1}</span>
+                    <button onClick={() => onUpdateQty(item.id, (item.qty ?? 1) + 1)} className="flex h-6 w-6 items-center justify-center rounded-lg border border-bnb-sand bg-bnb-cream transition-all active:scale-90">
                       <Plus size={10} />
                     </button>
                     <span className="text-[10px] text-bnb-muted">lots</span>
                   </div>
-                </div>
-                <button onClick={() => onRemove(item.id)} className="w-8 h-8 rounded-xl bg-red-50 border border-red-100 flex items-center justify-center text-red-400 flex-shrink-0 active:scale-90 transition-all">
-                  <Trash2 size={13} />
-                </button>
+                )}
               </div>
             ))
           )}
         </div>
+
         {items.length > 0 && (
-          <div className="p-4 border-t border-bnb-sand flex-shrink-0 space-y-2">
-            <div className="bg-[#E8F8EE] border border-[#b2e0c2] rounded-xl px-3 py-2.5 text-[10px] text-[#2d5a3d] font-mono leading-relaxed whitespace-pre-wrap">
-              {'Hi BNB,\n\nWholesale inquiry:\n\n' + items.map((item, i) =>
-                `${i + 1}. LOT ${item.lot_code} - ${item.name}\n   Qty: ${item.qty} lot${item.qty > 1 ? 's' : ''}`
-              ).join('\n\n') + `\n\nTotal: ${totalQty} lots\nPlease confirm availability.`}
+          <div className="shrink-0 space-y-2 border-t border-bnb-sand p-4">
+            <div className="max-h-36 overflow-y-auto rounded-xl border border-[#b2e0c2] bg-[#E8F8EE] px-3 py-2.5 font-mono text-[10px] leading-relaxed text-[#2d5a3d] whitespace-pre-wrap">
+              {buildTrayInquiryMessage(items)}
             </div>
-            <a href={waUrl} target="_blank" rel="noopener noreferrer"
-              className="w-full flex items-center justify-center gap-2 py-3.5 bg-[#25D366] text-white rounded-2xl font-bold text-[14px] active:scale-95 transition-all">
+            <a href={waUrl} target="_blank" rel="noopener noreferrer" className="flex w-full items-center justify-center gap-2 rounded-2xl bg-[#25D366] py-3.5 text-[14px] font-bold text-white transition-all active:scale-95">
               <MessageCircle size={17} />
               Send Inquiry on WhatsApp
             </a>

@@ -1,7 +1,7 @@
 'use client'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Home, Search, Bookmark, Settings } from 'lucide-react'
+import { Home, Search, Bookmark } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useTray } from '@/hooks/useTray'
 
@@ -9,7 +9,6 @@ const navItems = [
   { href: '/',        icon: Home,     label: 'Catalog'  },
   { href: '/search',  icon: Search,   label: 'Search'   },
   { href: '/tray',    icon: Bookmark, label: 'Tray',    badge: true },
-  { href: '/admin/dashboard', icon: Settings, label: 'Admin' },
 ]
 
 export function BottomNav() {

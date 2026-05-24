@@ -12,8 +12,8 @@ import toast from 'react-hot-toast'
 interface MediaFile { file: File; preview: string; type: 'image' | 'video' }
 interface Props { onSuccess?: () => void }
 
-const CLOUD_NAME = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME!
-const UPLOAD_PRESET = process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET!
+const CLOUD_NAME = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME
+const UPLOAD_PRESET = process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET
 
 export function BulkUpload({ onSuccess }: Props) {
   const [step, setStep] = useState<1 | 2 | 3>(1)
@@ -84,6 +84,7 @@ export function BulkUpload({ onSuccess }: Props) {
     if (!lotCode.trim()) { toast.error('Lot code is required'); return }
     if (!name.trim()) { toast.error('Product name is required'); return }
     if (mediaFiles.length === 0) { toast.error('At least one photo is required'); return }
+    if (!CLOUD_NAME || !UPLOAD_PRESET) { toast.error('Cloudinary upload settings are missing'); return }
 
     setUploading(true)
     const supabase = createClient()
